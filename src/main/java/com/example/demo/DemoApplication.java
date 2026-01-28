@@ -5,14 +5,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 @SpringBootApplication
 public class DemoApplication implements CommandLineRunner {
-    private final BooksRepo booksRepo;
     private final BooksService booksService;
 
-    public DemoApplication(BooksRepo booksRepo, BooksService booksService) {
-        this.booksRepo = booksRepo;
+    public DemoApplication(BooksService booksService) {
         this.booksService = booksService;
     }
 
@@ -21,8 +20,7 @@ public class DemoApplication implements CommandLineRunner {
 	}
 
     @Override
-    public void run(String... args) throws IOException {
+    public void run(String... args) throws IOException, SQLException {
         booksService.bulkImport("src/main/java/com/example/demo/books");
-        booksRepo.getBooks().forEach(System.out::println);
     }
 }

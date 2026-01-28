@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,7 @@ public class BooksService {
         this.booksRepo = booksRepo;
     }
 
-    public void bulkImport(String folderPath) throws IOException {
+    public void bulkImport(String folderPath) throws IOException, SQLException {
         File inputFile = new File(folderPath);
         if (inputFile.isDirectory()) {
             File[] files = inputFile.listFiles();
@@ -26,9 +27,7 @@ public class BooksService {
                 List<Map<String, String>> records = CustomFileReader.readFile(file);
                 if (records == null) continue;
                 List<Book> books = new ArrayList<>();
-                records.forEach(record -> {
-                    books.add(BookMapper.booksFileRowToBook(record));
-                });
+                records.forEach(record -> books.add(BookMapper.booksFileRowToBook(record)));
                 booksRepo.saveAll(books);
             }
         }
