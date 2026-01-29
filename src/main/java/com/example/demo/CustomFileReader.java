@@ -12,13 +12,11 @@ import java.util.*;
 public class CustomFileReader {
     private static List<Map<String, String>> readJsonFile(File file) {
         ObjectMapper objectMapper = new ObjectMapper();
-        List<Map<String, String>> records = objectMapper.readValue(file, new TypeReference<List<Map<String, String>>>() {});
+        List<Map<String, String>> records = objectMapper.readValue(file, new TypeReference<>() {});
 
         long distinctRecordSizes = records.stream().mapToInt(Map::size).distinct().count();
-        if (distinctRecordSizes > 1) {
-            log.error("File: {}, Distinct JSON Lengths found: Skipping File", file.getName());
-            return null;
-        }
+        if (distinctRecordSizes > 1)
+            log.warn("File: {}, Distinct JSON Lengths found", file.getName());
 
         return records;
     }
@@ -34,14 +32,14 @@ public class CustomFileReader {
             String row = sc.nextLine();
             String[] columns = row.split(",");
 
-            if (headers.length != columns.length) {
+            if (headers.length != columns.length)
                 log.warn("File: {}, Headers-Columns Length Mismatch for the row: {}", file.getName(), row);
-                continue;
-            }
 
             Map<String, String> record = new HashMap<>();
-            for (int i = 0; i < headers.length; i++)
-                record.put(headers[i], columns[i]);
+            for (int i = 0; i < headers.length; i++) {
+                String columnValue = i >= columns.length ? null : columns[i];
+                record.put(headers[i], columnValue);
+            }
             records.add(record);
         }
         return records;

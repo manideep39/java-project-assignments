@@ -21,26 +21,12 @@ public class BooksRepo {
     @Getter
     private final List<Book> books = new ArrayList<>();
 
-
-    public void save(Book book) throws SQLException {
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement pstmt = connection.prepareStatement(INSERT_BOOKS_QUERY)) {
-            pstmt.setLong(1, book.getBook_id());
-            pstmt.setString(2, book.getTitle());
-            pstmt.setString(3, book.getAuthor());
-            pstmt.setString(4, book.getGenre());
-            pstmt.setBigDecimal(5, book.getPrice());
-            pstmt.setDouble(6, book.getRating());
-            pstmt.executeUpdate();
-        }
-    }
-
     public void saveAll(List<Book> books) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              PreparedStatement pstmt = connection.prepareStatement(INSERT_BOOKS_QUERY)) {
             connection.setAutoCommit(false);
             for (Book book: books) {
-                pstmt.setLong(1, book.getBook_id());
+                pstmt.setLong(1, book.getBookId());
                 pstmt.setString(2, book.getTitle());
                 pstmt.setString(3, book.getAuthor());
                 pstmt.setString(4, book.getGenre());

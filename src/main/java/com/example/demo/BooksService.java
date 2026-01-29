@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class BooksService {
     private final BooksRepo booksRepo;
 
@@ -24,10 +26,17 @@ public class BooksService {
             if (files == null)
                 throw new IOException();
             for (File file: files) {
-                List<Map<String, String>> records = CustomFileReader.readFile(file);
-                if (records == null) continue;
+                List<Map<String, String>> rawBooksData = CustomFileReader.readFile(file);
+                if (rawBooksData == null) continue;
                 List<Book> books = new ArrayList<>();
-                records.forEach(record -> books.add(BookMapper.booksFileRowToBook(record)));
+                rawBooksData.forEach(rawBookData -> {
+                    try {
+                        Book book = BookFactory.validateAndBuild(rawBookData);
+                        books.add(book);
+                    } catch (BookInputDataException e) {
+                        log.error("Book Input Data Exception in File: {}, Errors: {}", file.getName(), e.getErrors().toString());
+                    }
+                });
                 booksRepo.saveAll(books);
             }
         }

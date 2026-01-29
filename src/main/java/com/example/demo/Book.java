@@ -1,9 +1,6 @@
 package com.example.demo;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.math.BigDecimal;
 
@@ -11,7 +8,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @ToString
 public class Book {
-    private long book_id;
+    private Long bookId;
     private String title;
     private String author;
     private String genre;
