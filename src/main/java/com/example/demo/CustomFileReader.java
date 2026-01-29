@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import lombok.extern.slf4j.Slf4j;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
@@ -7,10 +8,19 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
+@Slf4j
 public class CustomFileReader {
     private static List<Map<String, String>> readJsonFile(File file) {
         ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(file, new TypeReference<List<Map<String, String>>>() {});
+        List<Map<String, String>> records = objectMapper.readValue(file, new TypeReference<List<Map<String, String>>>() {});
+
+        long distinctRecordSizes = records.stream().mapToInt(Map::size).distinct().count();
+        if (distinctRecordSizes > 1) {
+            log.error("File: {}, Distinct JSON Lengths found: Skipping File", file.getName());
+            return null;
+        }
+
+        return records;
     }
 
     private static List<Map<String, String>> readCsvFile(File file) throws FileNotFoundException {
@@ -23,6 +33,12 @@ public class CustomFileReader {
         while (sc.hasNextLine()) {
             String row = sc.nextLine();
             String[] columns = row.split(",");
+
+            if (headers.length != columns.length) {
+                log.warn("File: {}, Headers-Columns Length Mismatch for the row: {}", file.getName(), row);
+                continue;
+            }
+
             Map<String, String> record = new HashMap<>();
             for (int i = 0; i < headers.length; i++)
                 record.put(headers[i], columns[i]);
@@ -37,7 +53,10 @@ public class CustomFileReader {
         return switch (extension) {
             case ".json" -> readJsonFile(file);
             case ".csv" -> readCsvFile(file);
-            default -> null;
+            default -> {
+                log.warn("File: {} doesn't have a parser defined", fileName);
+                yield null;
+            }
         };
     }
 }

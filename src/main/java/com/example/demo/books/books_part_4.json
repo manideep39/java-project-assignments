@@ -8,5 +8,5 @@
   { "book_id": 37, "title": "Book Title 37", "author": "Author 37", "genre": "Sci-Fi", "price": 229.5, "rating": 3.5},
   { "book_id": 38, "title": "Book Title 38", "author": "Author 38", "genre": "Fantasy", "price": 233.0, "rating": 4.0 },
   { "book_id": 39, "title": "Book Title 39", "author": "Author 39", "genre": "Mystery", "price": 236.5, "rating": 3.0 },
-  { "book_id": 40, "title": "Book Title 40", "author": "Author 40", "genre": "Fiction", "price": 240.0, "rating": 3.5 }
+  { "book_id": 40, "title": "Book Title 40", "author": "Author 40", "genre": "Fiction", "price": 240.0 }
 ]
